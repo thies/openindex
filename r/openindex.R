@@ -4,10 +4,9 @@
 # 
 #
 # © Thies Lindenthal
-# thilin@mit.edu
-# <all rights reserved>	
+# htl24@cam.ac.uk	
 #
-# 2012-11-21
+# 2016-05-17
 # 
 # This software is work in progress and 
 # comes without ANY warranty.

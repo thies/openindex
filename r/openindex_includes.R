@@ -7,7 +7,7 @@
 # thilin@mit.edu
 # <all rights reserved>  
 #
-# 2012-11-21
+# 2016-05-17
 # 
 # This software is work in progress and 
 # comes without any warranty.
@@ -68,27 +68,30 @@ RepeatSalesIndex <- function( sales,indexFrequency=1, conversionBaseFrequency=NA
   #=========== FIND REPEAT SALES ===============
   # match sales by ID
     
-  pairs<-merge(sales, sales, by="id")
-  pairs<-subset(pairs,date.x < date.y)
-  # calculate return between sales
-  pairs$return <- pairs$price.y/pairs$price.x
+  #pairs<-merge(sales, sales, by="id")
+  #pairs<-subset(pairs,date.x < date.y)
+  #calculate return between sales
+  #pairs$return <- pairs$price.y/pairs$price.x
+  #pairs <- subset(pairs, ! is.na( return ) )
   
-  pairs <- subset(pairs, ! is.na( return ) )
+  pairs <- sales[order(sales$id, sales$date),]
+  pairs$id <- as.integer(factor(sales$id))
   
-  #pairs <- sales[order(sales$id, sales$date),]
-  #pairs$price.y[2:nrow(pairs)] <- pairs$price[1:(nrow(pairs)-1)]  
-  #pairs$id.y[2:nrow(pairs)] <- pairs$id[1:(nrow(pairs)-1)]  
-  #pairs$interval.y[2:nrow(pairs)] <- pairs$interval[1:(nrow(pairs)-1)]  
-  #pairs$date.y <- pairs$date
-  #pairs$date.y[2:nrow(pairs)] <- pairs$date[1:(nrow(pairs)-1)]  
-  #pairs <- subset(pairs, id == id.y)
-  #pairs$id.y <- NULL
-  #colnames(pairs) <- c("id", "price.y", "date.y","interval.y","price.x","interval.x","date.x")
+  pairs$price.y[2:nrow(pairs)] <- pairs$price[1:(nrow(pairs)-1)]  
+  pairs$id.y[2:nrow(pairs)] <- pairs$id[1:(nrow(pairs)-1)]  
+  pairs$interval.y[2:nrow(pairs)] <- pairs$interval[1:(nrow(pairs)-1)]  
+  pairs$date.y <- pairs$date
+  pairs$date.y[2:nrow(pairs)] <- pairs$date[1:(nrow(pairs)-1)]  
+  pairs <- subset(pairs, id == id.y)
+  
+  pairs$id.y <- NULL
+  colnames(pairs) <- c("id", "price.y", "date.y","interval.y","price.x","interval.x","date.x")
     
   # calculate return between sales
   pairs$return<-pairs$price.y/pairs$price.x
   pairs$ln_return <- log(pairs$return)
 
+  print( summary(pairs) )
   
   if(diagnostics){
     topreturns<-subset(pairs,return > quantile(pairs$return, 0.99))
