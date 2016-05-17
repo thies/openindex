@@ -24,7 +24,7 @@ library(MASS)
 
 
 # Index estimation
-RepeatSalesIndex <- function( sales,indexFrequency=1, conversionBaseFrequency=NA, method="CaseShiller", dateMin=NA, dateMax=NA, minDaysBetweenSales=0, maxReturn=NA, minReturn=NA, diagnostics=FALSE, confidence=0.95 ){ 
+RepeatSalesIndex <- function( sales,indexFrequency=1, conversionBaseFrequency=NA, method="CaseShiller", baseMethod = 'BaileyMuthNourse', dateMin=NA, dateMax=NA, minDaysBetweenSales=0, maxReturn=NA, minReturn=NA, diagnostics=FALSE, confidence=0.95 ){ 
 
   # Currently, three estimation methods are supported.
   if(! method %in% c("CaseShiller","BaileyMuthNourse","BokhariGeltner")){
@@ -165,7 +165,7 @@ RepeatSalesIndex <- function( sales,indexFrequency=1, conversionBaseFrequency=NA
       # shift dates by one frequency
       intervals_base_shifted <- months[seq((i-1)*indexFrequency+1, length(months), conversionBaseFrequency)]
       # and estimate shifted index
-      indices[[i]]<-estimateIndex(pairs, intervals_base_shifted, method="BaileyMuthNourse", diagnostics, confidence)
+      indices[[i]]<-estimateIndex(pairs, intervals_base_shifted, method=baseMethod, diagnostics, confidence)
     }
     
     if( diagnostics ){
