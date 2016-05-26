@@ -76,6 +76,8 @@ RepeatSalesIndex <- function( sales,indexFrequency=1, conversionBaseFrequency=NA
   
   pairs <- sales[order(sales$id, sales$date),]
   pairs$id <- as.integer(factor(sales$id))
+
+  pairs <- pairs[order(pairs$id, pairs$date),]
   
   pairs$price.y[2:nrow(pairs)] <- pairs$price[1:(nrow(pairs)-1)]  
   pairs$id.y[2:nrow(pairs)] <- pairs$id[1:(nrow(pairs)-1)]  
