@@ -75,7 +75,7 @@ RepeatSalesIndex <- function( sales,indexFrequency=1, conversionBaseFrequency=NA
   #pairs <- subset(pairs, ! is.na( return ) )
   
   pairs <- sales[order(sales$id, sales$date),]
-  pairs$id <- as.integer(factor(sales$id))
+  pairs$id <- as.integer(factor(pairs$id))
 
   pairs <- pairs[order(pairs$id, pairs$date),]
   
