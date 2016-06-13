@@ -210,7 +210,7 @@ RepeatSalesIndex <- function( sales,indexFrequency=1, conversionBaseFrequency=NA
     stacked_ret<-stacked_ret[ ! is.na(stacked_ret[,1]),]
     stacked_ret <- stacked_ret[ , colSums( abs( stacked_ret ) ) != 0]
         
-    write.csv( stacked_ret, file="~/Downloads/stacked_ret.csv" )
+    #write.csv( stacked_ret, file="~/Downloads/stacked_ret.csv" )
         
     X <- stacked_ret[,2:ncol(stacked_ret)]
         
