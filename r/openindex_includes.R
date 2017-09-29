@@ -290,7 +290,8 @@ estimateIndex <- function( p, int, diagnostics=FALSE, method="CaseShiller", conf
     p$weights <- 1/p$fitted_second_stage_sqrt
     # estimate index with weighted least squares
     reg  <- lm( as.formula( paste( "ln_return~-1+",deps,sep='' ) ), data=p, weights=p$weights )
-    
+    p$resid <- resid(reg)
+    write.csv(p , file="~/Downloads/resid.csv", row.names=FALSE)
   }
 
 	# evaluate index  
