@@ -19,6 +19,7 @@
 #========================================================
 
 
+setwd("~/git/openindex/")
 
 # ==== LOAD DATA
 # Expected input: CSV sheet containing information on:
@@ -26,7 +27,7 @@
 #     - Sales price
 #     - Date of sale. Format: yyyy-mm-dd
 # An example can be found at http://lindenthal.eu/sales_sample.csv
-sales <- read.csv("~/research/openindex/data/testsales.csv",as.is=TRUE)
+sales <- read.csv("data/testsales.csv",as.is=TRUE)
 colnames(sales)<-c("id","price","date")
 # order by date, ascending
 sales$date<-as.Date(sales$date)
@@ -34,16 +35,16 @@ sales<-sales[order(sales$date),]
 
 
 # load the index estimation script
-source("/home/thies/Ubuntu One/research/openindex/R/openindex_includes.R")
+source("r/openindex_includes.R")
 
 # estimate Index
-BMN <- RepeatSalesIndex(sales,indexFrequency=1, method="BaileyMuthNourse", dateMin=as.Date("2000-01-01"), dateMax=as.Date("2012-12-31"), minDaysBetweenSales=1, maxReturn=NA, minReturn=NA, diagnostics=TRUE)
-BG <- RepeatSalesIndex(sales,indexFrequency=1, conversionBaseFrequency=12, method="BokhariGeltner", dateMin=as.Date("2000-01-01"), dateMax=as.Date("2012-12-31"), minDaysBetweenSales=1, maxReturn=NA, minReturn=NA, diagnostics=TRUE)
+BMN <- RepeatSalesIndex(sales,indexFrequency=1, method="BaileyMuthNourse", dateMin=as.Date("2000-01-01"), dateMax=as.Date("2017-10-31"), minDaysBetweenSales=1, maxReturn=NA, minReturn=NA, diagnostics=TRUE)
+BG <- RepeatSalesIndex(sales,indexFrequency=1, conversionBaseFrequency=12, method="BokhariGeltner", dateMin=as.Date("2000-01-01"), dateMax=as.Date("2017-10-31"), minDaysBetweenSales=1, maxReturn=NA, minReturn=NA, diagnostics=TRUE)
 
 plot(BG$index$date, BG$index$estimate, type="n", xlab="Time", ylab="Index")
 lines(BG$index$date, BG$index$estimate, col="blue", lwd=3)
 lines(BMN$index$date, BMN$index$estimate, col="red", lwd=3)
-
+legend("bottomleft",c("Frequency conversion, 12:1 (BG)","Repeat sales (BMN)"), lwd=3, col=c("blue","red"))
 
 
 # CS <- RepeatSalesIndex(sales,indexFrequency=3, method="CaseShiller", dateMin=as.Date("2000-01-01"), dateMax=as.Date("2012-12-31"), minDaysBetweenSales=1, maxReturn=NA, minReturn=NA, diagnostics=TRUE)
