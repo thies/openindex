@@ -26,7 +26,7 @@ setwd("~/git/openindex/")
 #     - Property identifier. ID can be a number or a set of strings or a combination of both.
 #     - Sales price
 #     - Date of sale. Format: yyyy-mm-dd
-# An example can be found at http://lindenthal.eu/sales_sample.csv
+# (Script to generate test data provided in repository)
 sales <- read.csv("data/testsales.csv",as.is=TRUE)
 colnames(sales)<-c("id","price","date")
 # order by date, ascending
