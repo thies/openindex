@@ -92,8 +92,6 @@ RepeatSalesIndex <- function( sales,indexFrequency=1, conversionBaseFrequency=NA
   # calculate return between sales
   pairs$return<-pairs$price.y/pairs$price.x
   pairs$ln_return <- log(pairs$return)
-
-  print( summary(pairs) )
   
   if(diagnostics){
     topreturns<-subset(pairs,return > quantile(pairs$return, 0.99))
@@ -103,8 +101,6 @@ RepeatSalesIndex <- function( sales,indexFrequency=1, conversionBaseFrequency=NA
     # write lists of top-/low-returns to output
     Index[["lowReturns"]]<-lowreturns
     Index[["highReturns"]]<-topreturns
-    
-    #print(topreturns)
   }
   # Exclude repeat sales with unreasonably high/low returns (cut-offs defined in settings )
   if(!is.na(maxReturn)){
@@ -210,8 +206,6 @@ RepeatSalesIndex <- function( sales,indexFrequency=1, conversionBaseFrequency=NA
     stacked_ret<-stacked_ret[ ! is.na(stacked_ret[,1]),]
     stacked_ret <- stacked_ret[ , colSums( abs( stacked_ret ) ) != 0]
         
-    #write.csv( stacked_ret, file="~/Downloads/stacked_ret.csv" )
-        
     X <- stacked_ret[,2:ncol(stacked_ret)]
         
     # calculate generalized inverse of matrix
@@ -291,7 +285,6 @@ estimateIndex <- function( p, int, diagnostics=FALSE, method="CaseShiller", conf
     # estimate index with weighted least squares
     reg  <- lm( as.formula( paste( "ln_return~-1+",deps,sep='' ) ), data=p, weights=p$weights )
     p$resid <- resid(reg)
-    write.csv(p , file="~/Downloads/resid.csv", row.names=FALSE)
   }
 
 	# evaluate index  
