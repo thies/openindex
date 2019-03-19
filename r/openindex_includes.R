@@ -4,10 +4,10 @@
 # 
 #
 # © Thies Lindenthal
-# thilin@mit.edu
+# htl24@cam.ac.uk
 # <all rights reserved>  
 #
-# 2016-05-17
+# 2019-03-19
 # 
 # This software is work in progress and 
 # comes without any warranty.
@@ -22,9 +22,44 @@
 # ==== Load libraries
 library(MASS) 
 
+HedonicIndex <- function(sales, dep.var=NA, hed.var=NA, indexFrequency=1, date.var="date"){
+  if(is.na(hed.var)){
+    print("No Hedonic variables defined: hed.ind.var")
+    return(NA)
+  }  
+  if(is.na(dep.var)){
+    print("No Hedonic dep variable: hed.dep.var")
+    return(NA)
+  }  
+  Index <- list()
+  sales$date<-as.Date(sales[,date.var])
+  # Set the end of each interval period
+  dateMin <- min(sales$date)
+  dateMax <- max(sales$date)
+  months<-seq(from=dateMin, to=(dateMax+27), by="month")
+  intervals <-months[seq((1+indexFrequency), length(months), indexFrequency)]-1
+  Index[["date"]]<-intervals
+  # set the interval for each sale
+  sales$interval<-1
+  for(i in length(intervals):1){
+    sales$interval[sales$date <= intervals[i]]<-i
+  }  
+  sales$time_dummies <- as.factor(sales$interval)
+  sales$time_dummies <- relevel(sales$time_dummies, "1")
+  formula <- paste(dep.var,"~",paste(hed.var,collapse="+"), "+","time_dummies")
+  reg <- lm(as.formula(formula), data=sales)
+  coeffs <- reg$coefficients[grepl("^time_dummies", names(reg$coefficients), perl=TRUE)]
+  ind <- list()
+  ind[["date"]] <- intervals
+  ind[["estimate"]] <- exp(c(0,as.numeric(coeffs)))*100
+  Index[["index"]] <- ind
+  return(Index)
+}
+  
+  
 
 # Index estimation
-RepeatSalesIndex <- function( sales,indexFrequency=1, conversionBaseFrequency=NA, method="CaseShiller", baseMethod = 'BaileyMuthNourse', dateMin=NA, dateMax=NA, minDaysBetweenSales=0, maxReturn=NA, minReturn=NA, diagnostics=FALSE, confidence=0.95 ){ 
+RepeatSalesIndex <- function( sales,indexFrequency=1, conversionBaseFrequency=NA, method="CaseShiller", baseMethod = 'BaileyMuthNourse', dateMin=NA, dateMax=NA, minDaysBetweenSales=0, maxReturn=NA, minReturn=NA, diagnostics=FALSE, confidence=0.95){ 
 
   # Currently, three estimation methods are supported.
   if(! method %in% c("CaseShiller","BaileyMuthNourse","BokhariGeltner")){
@@ -64,7 +99,9 @@ RepeatSalesIndex <- function( sales,indexFrequency=1, conversionBaseFrequency=NA
     print(Index[["salesSumstats"]])
   }
   Index[['sales']]<-sales
-    
+
+
+      
   #=========== FIND REPEAT SALES ===============
   # match sales by ID
     
@@ -92,6 +129,15 @@ RepeatSalesIndex <- function( sales,indexFrequency=1, conversionBaseFrequency=NA
   # calculate return between sales
   pairs$return<-pairs$price.y/pairs$price.x
   pairs$ln_return <- log(pairs$return)
+  
+  if(TRUE){
+    pairs$price.x.str <- sapply(pairs$price.x, toString)
+    pairs$price.y.str <- sapply(pairs$price.y, toString)
+    pairs$roundnumbers <- 0
+    pairs$roundnumbers[ grepl("[05]0000$", pairs$price.y.str, perl=TRUE )  ] <- 1
+    pairs$roundnumbers[ grepl("[05]0000$", pairs$price.x.str, perl=TRUE )  ] <- 1
+    pairs$roundnumbers[  grepl("[05]0000$", pairs$price.y.str, perl=TRUE ) && grepl("[05]0000$", pairs$price.x.str, perl=TRUE )  ] <- 2
+  }
   
   if(diagnostics){
     topreturns<-subset(pairs,return > quantile(pairs$return, 0.99))
@@ -131,12 +177,14 @@ RepeatSalesIndex <- function( sales,indexFrequency=1, conversionBaseFrequency=NA
     Index[["pairsPerInterval"]]<-tab
   }  
   
+
   
   # ======= BASIC OVERVIEW
   # compare straight index to mean sales prices and median sales prices
   if( method %in% c("CaseShiller","BaileyMuthNourse") ){
     repsales <- estimateIndex( pairs, c( ( dateMin-1 ), intervals ), diagnostics, method, confidence )
-
+    try( write.csv( pairs , file="/tmp/pairs.csv", row.names=FALSE))
+    
     
     index <- as.data.frame( exp( repsales$fit )*100 )
     colnames( index ) <- "estimate"
@@ -286,6 +334,10 @@ estimateIndex <- function( p, int, diagnostics=FALSE, method="CaseShiller", conf
     reg  <- lm( as.formula( paste( "ln_return~-1+",deps,sep='' ) ), data=p, weights=p$weights )
     p$resid <- resid(reg)
   }
+	
+	# quick and dirty retrieval of residual values
+	try( write.csv( resid(reg), file="/tmp/resid.csv", row.names=FALSE))
+	
 
 	# evaluate index  
 	mat  <- matrix( 1, ncol( dummies ) , ncol( dummies ) )
@@ -294,10 +346,10 @@ estimateIndex <- function( p, int, diagnostics=FALSE, method="CaseShiller", conf
 	evaluate <- as.data.frame( mat )
 	colnames( evaluate )<-colnames( dummies )
 	pred <-  as.data.frame( predict.lm( reg, evaluate, interval="confidence", level=confidence ) )
-  
+
   # add base year back 
   pred <- rbind(c(0,0,0), pred)
-  
+
 	return( pred )
 }
 #===================
