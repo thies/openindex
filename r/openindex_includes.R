@@ -50,9 +50,8 @@ HedonicIndex <- function(sales, dep.var=NA, hed.var=NA, indexFrequency=1, date.v
   reg <- lm(as.formula(formula), data=sales)
   coeffs <- reg$coefficients[grepl("^time_dummies", names(reg$coefficients), perl=TRUE)]
   ind <- list()
-  ind[["date"]] <- intervals
-  ind[["estimate"]] <- exp(c(0,as.numeric(coeffs)))*100
-  Index[["index"]] <- ind
+  Index[["index"]] <- as.data.frame(cbind(intervals, exp(c(0,as.numeric(coeffs)))*100))
+  colnames(Index[["index"]]) <- c("date","estimate")
   return(Index)
 }
   
