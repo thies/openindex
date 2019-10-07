@@ -182,7 +182,7 @@ RepeatSalesIndex <- function( sales,indexFrequency=1, conversionBaseFrequency=NA
   # compare straight index to mean sales prices and median sales prices
   if( method %in% c("CaseShiller","BaileyMuthNourse") ){
     repsales <- estimateIndex( pairs, c( ( dateMin-1 ), intervals ), diagnostics, method, confidence )
-    try( write.csv( pairs , file="/tmp/pairs.csv", row.names=FALSE))
+    # try( write.csv( pairs , file="/tmp/pairs.csv", row.names=FALSE))
     
     
     index <- as.data.frame( exp( repsales$fit )*100 )
