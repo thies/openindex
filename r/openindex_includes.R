@@ -335,7 +335,7 @@ estimateIndex <- function( p, int, diagnostics=FALSE, method="CaseShiller", conf
   }
 	
 	# quick and dirty retrieval of residual values
-	try( write.csv( resid(reg), file="/tmp/resid.csv", row.names=FALSE))
+	# try( write.csv( resid(reg), file="/tmp/resid.csv", row.names=FALSE))
 	
 
 	# evaluate index  
