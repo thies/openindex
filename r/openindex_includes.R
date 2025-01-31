@@ -129,7 +129,7 @@ RepeatSalesIndex <- function( sales,indexFrequency=1, conversionBaseFrequency=NA
   pairs$return<-pairs$price.y/pairs$price.x
   pairs$ln_return <- log(pairs$return)
   
-  if(TRUE){
+  if(FALSE){
     pairs$price.x.str <- sapply(pairs$price.x, toString)
     pairs$price.y.str <- sapply(pairs$price.y, toString)
     pairs$roundnumbers <- 0
